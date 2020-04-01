@@ -13,7 +13,7 @@ kubectl label nodes worker.102 k8s3-ingress-
 
 ## 执行部署
 ```
-kubectl apply -k https://raw.githubusercontent.com/suisrc/k8s-nginx-ingress/master/kustomization.yaml
+kubectl apply -k https://github.com/suisrc/k8s-nginx-ingress
 # 默认没有安装service, 可以从nodeport, metallb选择需要的部署方式
 kubectl apply -f https://raw.githubusercontent.com/suisrc/k8s-nginx-ingress/master/25-service-metallb.yaml
 ```
