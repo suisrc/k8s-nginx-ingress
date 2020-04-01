@@ -1,0 +1,34 @@
+# kubectl apply -f 24-service-nodeport.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: ingress-nginx-svc
+  namespace: ingress-nginx
+  labels:
+    app.kubernetes.io/name: ingress-nginx
+    app.kubernetes.io/part-of: ingress-nginx
+spec:
+  externalTrafficPolicy: Local
+  type: NodePort
+  ports:
+    # 如果外部使用proxy_protocol协议，请使用该端口
+    #- name: http1
+    #  port: 81
+    #  targetPort: http
+    #  protocol: TCP
+    #  nodePort: 30081
+    - name: http
+      port: 80
+      targetPort: http1
+      protocol: TCP
+      nodePort: 30080
+    # 默认443兼容proxy_protocol协议，即无论该协议是否存在，都不会影响其访问
+    - name: https
+      port: 443
+      targetPort: https
+      protocol: TCP
+      nodePort: 30442
+  selector:
+    app.kubernetes.io/name: ingress-nginx
+    app.kubernetes.io/part-of: ingress-nginx
+

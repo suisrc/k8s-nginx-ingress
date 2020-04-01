@@ -1,0 +1,16 @@
+# kubectl apply -f 20-namespace.yaml
+# kubectl apply -k .
+# 
+# kubectl k8s3-ingress: worker
+# 
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: ingress-nginx
+resources:
+- 20-namespace.yaml
+- 21-configmap.yaml
+- 22-mandatory.yaml
+- 24-service-nodeport.yaml
+#- 25-service-metallb.yaml
+#- 26-service-aliyun.yaml
+
