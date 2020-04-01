@@ -1,4 +1,4 @@
-#说明
+# 说明
 
 ## 部署注意事项
 该项目主要用于kubernetes部署nginx-ingress入口路由，为了防止跟既有的nginx发生冲突，最好选择部署节点
@@ -20,5 +20,5 @@ kubectl apply -f https://raw.githubusercontent.com/suisrc/k8s-nginx-ingress/mast
 
 在原有的quay.io/kubernetes-ingress-controller/nginx-ingress-controller上增加了geoip2的支持
 
-免责声明：
+免责声明：  
     软件完全来自开源，由于geoip2有使用限制，内容仅供学习
