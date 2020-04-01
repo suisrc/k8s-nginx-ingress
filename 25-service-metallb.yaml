@@ -11,21 +11,21 @@ spec:
   externalTrafficPolicy: Local
   type: LoadBalancer
   ports:
-    - name: http1
-      port: 81
-      targetPort: http
-      protocol: TCP
-      nodePort: 30081
+    #- name: http1
+    #  port: 81
+    #  targetPort: http
+    #  protocol: TCP
+    #  #nodePort: 30081
     - name: http
       port: 80
       targetPort: http1
       protocol: TCP
-      nodePort: 30080
+      #nodePort: 30080
     - name: https
       port: 443
       targetPort: https
       protocol: TCP
-      nodePort: 30442
+      #nodePort: 30442
   selector:
     app.kubernetes.io/name: ingress-nginx
     app.kubernetes.io/part-of: ingress-nginx

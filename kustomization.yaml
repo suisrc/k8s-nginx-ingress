@@ -10,7 +10,7 @@ resources:
 - 20-namespace.yaml
 - 21-configmap.yaml
 - 22-mandatory.yaml
-- 24-service-nodeport.yaml
+#- 24-service-nodeport.yaml
 #- 25-service-metallb.yaml
 #- 26-service-aliyun.yaml
 

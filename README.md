@@ -8,14 +8,14 @@ kubectl label nodes master.021 k8s3-ingress=worker
 # 为节点删除标签
 kubectl label nodes worker.102 k8s3-ingress-
 ```
-
 当然完全可以忽略以上内容
 
-默认部署会使用节点的30080和30442端口。
 
 ## 执行部署
 ```
 kubectl apply -k https://raw.githubusercontent.com/suisrc/k8s-nginx-ingress/master/kustomization.yaml
+# 默认没有安装service, 可以从nodeport, metallb选择需要的部署方式
+kubectl apply -f https://raw.githubusercontent.com/suisrc/k8s-nginx-ingress/master/25-service-metallb.yaml
 ```
 
 在原有的quay.io/kubernetes-ingress-controller/nginx-ingress-controller上增加了geoip2的支持
