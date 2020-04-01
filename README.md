@@ -15,7 +15,7 @@ kubectl label nodes worker.102 k8s3-ingress-
 
 ## 执行部署
 ```
-
+kubectl apply -k https://raw.githubusercontent.com/suisrc/k8s-nginx-ingress/master/kustomization.yaml
 ```
 
 在原有的quay.io/kubernetes-ingress-controller/nginx-ingress-controller上增加了geoip2的支持
