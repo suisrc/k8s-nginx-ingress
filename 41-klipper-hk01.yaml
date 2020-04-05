@@ -1,9 +1,9 @@
 # 用于进行负载穿透，向外部暴露本机对应的端口
-# kubectl apply -f 41-klipper-us3.yaml
+# kubectl apply -f 41-klipper-hk42.yaml
 kind: Pod
 apiVersion: v1
 metadata:
-  name: ingress-nodeport-us3
+  name: ingress-nodeport-hk42
   namespace: ingress-nginx
 spec:
   nodeSelector:
