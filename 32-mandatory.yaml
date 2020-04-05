@@ -1,0 +1,136 @@
+# kubectl apply -f 32-mandatory.yaml
+# 用于集群附加节点，所入口路由构建
+apiVersion: v1
+kind: Service
+metadata:
+  name: ingress-nginx-us01
+  namespace: ingress-nginx
+spec:
+  externalTrafficPolicy: Local
+  type: NodePort
+  ports:
+    #- name: http1
+    #  port: 81
+    #  targetPort: http
+    #  protocol: TCP
+    #  #nodePort: 30081
+    #- name: http
+    #  port: 80
+    #  targetPort: http1
+    #  protocol: TCP
+    #  #nodePort: 30080
+    - name: https
+      port: 443
+      targetPort: https
+      protocol: TCP
+      nodePort: 30441
+  selector:
+    app: nginx-ingress-us01
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-ingress-us01
+  namespace: ingress-nginx
+  labels:
+    app: nginx-ingress-us01
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx-ingress-us01
+  template:
+    metadata:
+      labels:
+        app: nginx-ingress-us01
+      annotations:
+        prometheus.io/port: "10254"
+        prometheus.io/scrape: "true"
+    spec:
+      # wait up to five minutes for the drain of connections
+      terminationGracePeriodSeconds: 300
+      serviceAccountName: nginx-ingress-serviceaccount
+      nodeSelector:
+        kubernetes.io/os: linux
+        # k8s3-ingress: worker
+        k3s.io/hostname: woker-us-01.quay.run
+      containers:
+        - name: nginx-ingress-us01
+          #image: quay.io/kubernetes-ingress-controller/nginx-ingress-controller:0.30.0
+          image: suisrc/ingress-nginx:0.30.0
+          args:
+            - /nginx-ingress-controller
+            - --configmap=$(POD_NAMESPACE)/nginx-configuration
+            - --publish-service=$(POD_NAMESPACE)/ingress-nginx-us01
+            - --annotations-prefix=nginx.ingress.kubernetes.io
+            - --enable-ssl-passthrough
+            - --ingress-class=nginx-us01
+          securityContext:
+            allowPrivilegeEscalation: true
+            capabilities:
+              drop:
+                - ALL
+              add:
+                - NET_BIND_SERVICE
+            # www-data -> 101
+            runAsUser: 101
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+            - name: http1
+              containerPort: 81
+              protocol: TCP
+            - name: https
+              containerPort: 443
+              protocol: TCP
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /healthz
+              port: 10254
+              scheme: HTTP
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 10
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /healthz
+              port: 10254
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 10
+          lifecycle:
+            postStart:
+              exec:
+                # 用于解决使用了use-proxy-protocol: 'true'导致http协议无法访问的问题
+                command:
+                  - sh
+                  - '-c'
+                  - >-
+                    sed -i "s/# TCP services/# FIX proxy_protocol to 80
+                    \n    server {
+                    \n      listen         81;
+                    \n      proxy_timeout  76s;
+                    \n      proxy_pass     127.0.0.1:80;
+                    \n      proxy_protocol on;
+                    \n    }
+                    \n    &/g" /etc/nginx/template/nginx.tmpl
+            preStop:
+              exec:
+                command:
+                  - /wait-shutdown
+
+---
