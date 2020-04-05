@@ -1,5 +1,4 @@
-# kubectl apply -f 32-mandatory.yaml
-# 用于集群附加节点，所入口路由构建
+# 美国入口节点
 apiVersion: v1
 kind: Service
 metadata:
@@ -23,7 +22,7 @@ spec:
       port: 443
       targetPort: https
       protocol: TCP
-      nodePort: 30441
+      nodePort: 31301
   selector:
     app: nginx-ingress-us01
 ---
@@ -53,14 +52,14 @@ spec:
       nodeSelector:
         kubernetes.io/os: linux
         # k8s3-ingress: worker
-        k3s.io/hostname: woker-us-01.quay.run
+        k3s.io/hostname: worker-us-01
       containers:
         - name: nginx-ingress-us01
           #image: quay.io/kubernetes-ingress-controller/nginx-ingress-controller:0.30.0
           image: suisrc/ingress-nginx:0.30.0
           args:
             - /nginx-ingress-controller
-            - --configmap=$(POD_NAMESPACE)/nginx-configuration
+            - --configmap=$(POD_NAMESPACE)/nginx-configuration-x01
             - --publish-service=$(POD_NAMESPACE)/ingress-nginx-us01
             - --annotations-prefix=nginx.ingress.kubernetes.io
             - --enable-ssl-passthrough
