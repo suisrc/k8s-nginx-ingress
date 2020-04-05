@@ -67,6 +67,7 @@ rules:
     verbs:
       - list
       - watch
+      - update
   - apiGroups:
       - ""
     resources:
@@ -215,6 +216,7 @@ spec:
       nodeSelector:
         kubernetes.io/os: linux
         # k8s3-ingress: worker
+        k3s.io/hostname: worker-hk-01
       containers:
         - name: nginx-ingress-app
           #image: quay.io/kubernetes-ingress-controller/nginx-ingress-controller:0.30.0
